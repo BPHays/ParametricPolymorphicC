@@ -51,6 +51,7 @@ size_t    fn(list_size, T)(list(T) * l);
 /* Insertion / Removal */
 #define list_insert_front(T, l, val)   fn(list_insert_front, T)(l, val)
 #define list_insert_back(T, l, val)    fn(list_insert_back, T)(l, val)
+#define list_insert_unique(T, l, val)  fn(list_insert_unique, T)(l, val)
 #define list_remove_front(T, l)        fn(list_remove_front, T)(l)
 #define list_remove_back(T, l)         fn(list_remove_back, T)(l)
 #define list_remove(T, l, val)         fn(list_remove, T)(l, val)
