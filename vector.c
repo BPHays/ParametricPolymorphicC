@@ -1,22 +1,49 @@
 #include <stdio.h>
+#include <stdbool.h>
+
 #include "vector.h"
 
 generate_sig_vector(int)
 
 generate_impl_vector(int)
 
-int main() {
+#define runtest(test)                    \
+          if (test()) {                  \
+            printf("%s passed\n", #test);  \
+          } else {                       \
+            printf("%s failed\n", #test);  \
+          }                              
+
+bool push_test() {
   vector(int) v;
   vector(int) *vptr = &v;
+  int array [] = {5, 6, 7, 8};
   vector_init(int, vptr, 10);
-  vector_push(int, vptr, 5);
-  vector_push(int, vptr, 6);
-  vector_push(int, vptr, 7);
-  vector_push(int, vptr, 8);
-  vector_push(int, vptr, 8);
-  vector_push(int, vptr, 8);
-  vector_push(int, vptr, 8);
-  for (int i = 0; i < vector_size(int, vptr); i++) {
-    printf("%d\n", vector_at(int, vptr, i));
+  for (int i = 0; i < sizeof(array)/sizeof(*array); i++) {
+    //vector_push(int, vptr, array[i]);
+    vptr->m(push)(vptr, array[i]);
   }
+  for (int i = 0; i < vector_size(int, vptr); i++) {
+    if(array[i] != vector_at(int, vptr, i))
+      return false;
+  }
+  return true;
+}
+
+bool pop_test() {
+  vector(int) v;
+  vector(int) *vptr = &v;
+  int array [] = {5, 6, 7, 8};
+  vector_init(int, vptr, 10);
+  for (int i = 0; i < sizeof(array)/sizeof(*array); i++) {
+    vector_push(int, vptr, array[i]);
+  }
+  int n = vector_size(int, vptr);
+  vector_pop(int, vptr);
+  return vector_size(int, vptr) != n;
+}
+
+int main() {
+  runtest(push_test);
+  runtest(pop_test);
 }

@@ -4,11 +4,25 @@
 
 /* Generic header for vector of type T */
 #define generate_sig_vector(T)                                               \
-typedef struct {                                                             \
+typedef struct vector(T) {                                                   \
   size_t n;                                                                  \
   size_t size;                                                               \
   T * array;                                                                 \
+  struct interface( vector, T ) * methods;                                   \
 } vector(T);                                                                 \
+                                                                             \
+struct interface( vector, T ) {                                              \
+  void   (* del)     (vector(T) *);                                          \
+  void   (* push)    (vector(T) *, T);                                       \
+  T      (* pop)     (vector(T) *);                                          \
+  T      (* at)      (vector(T) *, size_t);                                  \
+  void   (* set)     (vector(T) *, size_t, T);                               \
+  size_t (* size)    (vector(T) *);                                          \
+  size_t (* max_size)(vector(T) *);                                          \
+  void   (* clear)   (vector(T) *);                                          \
+  T *    (* data)    (vector(T) *);                                          \
+};                                                                           \
+                                                                             \
 static void fn(vector_resize, T)(vector(T) * v, size_t newSize);             \
 void fn(vector_init, T)(vector(T) * v, size_t size);                         \
 vector(T) * fn(vector_new, T)(size_t size);                                  \
@@ -46,6 +60,21 @@ T * fn(vector_data, T)(vector(T) * v);
 
 /* Generic implementation for vector of type T */
 #define generate_impl_vector(T)                                              \
+                                                                             \
+/* Assign interface struct */                                                \
+struct interface( vector, T ) interface( vector, T ) = {                     \
+  .del      = fn(vector_del, T),                                             \
+  .push     = fn(vector_push, T),                                            \
+  .pop      = fn(vector_pop, T),                                             \
+  .at       = fn(vector_at, T),                                              \
+  .set      = fn(vector_set, T),                                             \
+  .size     = fn(vector_size, T),                                            \
+  .max_size = fn(vector_max_size, T),                                        \
+  .clear    = fn(vector_clear, T),                                           \
+  .data     = fn(vector_data, T)                                             \
+};                                                                           \
+                                                                             \
+/* Function impelementations */                                              \
 static void fn(vector_resize, T)(vector(T) * v, size_t newSize) {            \
   v->size  = newSize;                                                        \
   v->array = realloc(v->array, v->size);                                     \
@@ -55,6 +84,7 @@ void fn(vector_init, T)(vector(T) * v, size_t size) {                        \
   v->n = 0;                                                                  \
   v->size = size;                                                            \
   v->array = malloc(size);                                                   \
+  v->methods = &interface(vector, T);                                        \
 }                                                                            \
                                                                              \
 vector(T) * fn(vector_new, T)(size_t size) {                                 \
@@ -107,4 +137,4 @@ void fn(vector_clear, T)(vector(T) * v) {                                    \
                                                                              \
 T * fn(vector_data, T)(vector(T) * v) {                                      \
   return v->array;                                                           \
-}                                                                            
+}                                                                            \

@@ -1,3 +1,7 @@
 vector
 hashtab
 list
+pair
+umap
+uset
+*.swp
