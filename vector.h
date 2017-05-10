@@ -5,12 +5,13 @@
 /* Generic header for vector of type T */
 #define generate_sig_vector(T)                                               \
 typedef struct vector(T) {                                                   \
-  size_t n;                                                                  \
-  size_t size;                                                               \
-  T * array;                                                                 \
+  size_t  n;     /* current size */                                          \
+  size_t  size;  /* array size */                                            \
+  T      *array; /* array of elements */                                     \
   struct interface( vector, T ) * methods;                                   \
 } vector(T);                                                                 \
                                                                              \
+/* vector methods */                                                         \
 struct interface( vector, T ) {                                              \
   void   (* del)     (vector(T) *);                                          \
   void   (* push)    (vector(T) *, T);                                       \
@@ -23,18 +24,19 @@ struct interface( vector, T ) {                                              \
   T *    (* data)    (vector(T) *);                                          \
 };                                                                           \
                                                                              \
-static void fn(vector_resize, T)(vector(T) * v, size_t newSize);             \
-void fn(vector_init, T)(vector(T) * v, size_t size);                         \
-vector(T) * fn(vector_new, T)(size_t size);                                  \
-void fn(vector_del, T)(vector(T) * v);                                       \
-void fn(vector_push, T)(vector(T) * v, T elem);                              \
-T fn(vector_pop, T)(vector(T) * v);                                          \
-T fn(vector_at, T)(vector(T) * v, size_t i);                                 \
-void fn(vector_set, T)(vector(T) * v, size_t i, T elem);                     \
-size_t fn(vector_size, T)(vector(T) * v);                                    \
-size_t fn(vector_max_size, T)(vector(T) * v);                                \
-void fn(vector_clear, T)(vector(T) * v);                                     \
-T * fn(vector_data, T)(vector(T) * v);                                      
+/* vector prototypes */                                                      \
+static void fn(vector_resize, T)  (vector(T) * v, size_t newSize);           \
+void        fn(vector_init, T)    (vector(T) * v, size_t size);              \
+vector(T) * fn(vector_new, T)     (size_t size);                             \
+void        fn(vector_del, T)     (vector(T) * v);                           \
+void        fn(vector_push, T)    (vector(T) * v, T elem);                   \
+T           fn(vector_pop, T)     (vector(T) * v);                           \
+T           fn(vector_at, T)      (vector(T) * v, size_t i);                 \
+void        fn(vector_set, T)     (vector(T) * v, size_t i, T elem);         \
+size_t      fn(vector_size, T)    (vector(T) * v);                           \
+size_t      fn(vector_max_size, T)(vector(T) * v);                           \
+void        fn(vector_clear, T)   (vector(T) * v);                           \
+T *         fn(vector_data, T)    (vector(T) * v);                          
 
 #define vector(T) paramType(vector, T)
 
@@ -77,9 +79,10 @@ struct interface( vector, T ) interface( vector, T ) = {                     \
 /* Function impelementations */                                              \
 static void fn(vector_resize, T)(vector(T) * v, size_t newSize) {            \
   v->size  = newSize;                                                        \
-  v->array = realloc(v->array, v->size);                                     \
+  v->array = realloc(v->array, v->size * sizeof(T));                         \
 }                                                                            \
                                                                              \
+/* initialize the vector of size size */                                     \
 void fn(vector_init, T)(vector(T) * v, size_t size) {                        \
   v->n = 0;                                                                  \
   v->size = size;                                                            \
@@ -87,16 +90,19 @@ void fn(vector_init, T)(vector(T) * v, size_t size) {                        \
   v->methods = &interface(vector, T);                                        \
 }                                                                            \
                                                                              \
+/* allocate and initialize a new vector of size size */                      \
 vector(T) * fn(vector_new, T)(size_t size) {                                 \
   vector(T) * v = malloc(sizeof(vector(T)));                                 \
   fn(vector_init, T)(v, size);                                               \
   return v;                                                                  \
 }                                                                            \
                                                                              \
+/* deallocate the vector's members */                                        \
 void fn(vector_del, T)(vector(T) * v) {                                      \
   free(v->array);                                                            \
 }                                                                            \
                                                                              \
+/* append an element to the end of the vector */                             \
 void fn(vector_push, T)(vector(T) * v, T elem) {                             \
   if(v->n >= v->size) {                                                      \
     vector_resize(T, v, v->size * 2);                                        \
@@ -104,14 +110,17 @@ void fn(vector_push, T)(vector(T) * v, T elem) {                             \
   v->array[v->n++] = elem;                                                   \
 }                                                                            \
                                                                              \
+/* remove the last element from the vector */                                \
 T fn(vector_pop, T)(vector(T) * v) {                                         \
   return v->array[--v->n];                                                   \
 }                                                                            \
                                                                              \
+/* get the element at index i */                                             \
 T fn(vector_at, T)(vector(T) * v, size_t i) {                                \
   return v->array[i];                                                        \
 }                                                                            \
                                                                              \
+/* set the element at index i to elem */                                     \
 void fn(vector_set, T)(vector(T) * v, size_t i, T elem) {                    \
   if (i > v->size) {                                                         \
     /* TODO                                                                  \
@@ -123,18 +132,22 @@ void fn(vector_set, T)(vector(T) * v, size_t i, T elem) {                    \
   v->array[i] = elem;                                                        \
 }                                                                            \
                                                                              \
+/* return the current number of elements in the vector */                    \
 size_t fn(vector_size, T)(vector(T) * v) {                                   \
   return v->n;                                                               \
 }                                                                            \
                                                                              \
+/* return the current size of the array in the vector */                     \
 size_t fn(vector_max_size, T)(vector(T) * v) {                               \
   return v->size;                                                            \
 }                                                                            \
                                                                              \
+/* reset the size of the vector to 0 */                                      \
 void fn(vector_clear, T)(vector(T) * v) {                                    \
   v->n = 0;                                                                  \
 }                                                                            \
                                                                              \
+/* retrieve a pointer to the array in the vector */                          \
 T * fn(vector_data, T)(vector(T) * v) {                                      \
   return v->array;                                                           \
 }                                                                            \
