@@ -4,8 +4,8 @@
 #include "list.h"
 
 #define generate_sig_hash_tab(T)                                             \
-generate_sig_list(T) \
-generate_impl_list(T) \
+generate_sig_list(T)                                                         \
+generate_impl_list(T)                                                        \
 typedef struct hash_tab(T) {                                                 \
   size_t   n;                                                                \
   size_t   rows;                                                             \
@@ -13,9 +13,9 @@ typedef struct hash_tab(T) {                                                 \
   size_t   (*hash)(T);                                                       \
 } hash_tab(T);                                                               \
                                                                              \
-inline static size_t fn(hashTo, T)(hash_tab(T) * h, T val);                    \
+inline static size_t fn(hashTo, T)(hash_tab(T) * h, T val);                  \
 void fn(hash_init, T)(hash_tab(T) * h, size_t size);                         \
-hash_tab(T) * fn(hash_new, T)(size_t size);                                           \
+hash_tab(T) * fn(hash_new, T)(size_t size);                                  \
 void fn(hash_del, T)(hash_tab(T) * h);                                       \
 void fn(hash_insert, T)(hash_tab(T) * h, T val);                             \
 void fn(hash_remove, T)(hash_tab(T) * h, T val);                             \
@@ -40,7 +40,7 @@ T    fn(hash_get, T)(hash_tab(T) * h, T val);
 #define hash_get(T, h, val)            fn(hash_get, T)(h, val)
 
 #define generate_impl_hash_tab(T)                                            \
-inline static size_t fn(hashTo, T)(hash_tab(T) * h, T val) {                   \
+inline static size_t fn(hashTo, T)(hash_tab(T) * h, T val) {                 \
   return (h->hash ? h->hash(val) : val) % h->rows;                           \
 }                                                                            \
                                                                              \
@@ -49,42 +49,42 @@ void fn(hash_init, T)(hash_tab(T) * h, size_t size) {                        \
   h->rows = size;                                                            \
   h->tab = malloc(sizeof(list(T)) * size);                                   \
   for (int i = 0; i < size; i++) {                                           \
-    list_init(T, &h->tab[i]);                                                 \
+    list_init(T, &h->tab[i]);                                                \
   }                                                                          \
   h->hash = NULL;                                                            \
 }                                                                            \
                                                                              \
-hash_tab(T) * fn(hash_new, T)(size_t size) {                                          \
+hash_tab(T) * fn(hash_new, T)(size_t size) {                                 \
   hash_tab(T) * h = malloc(sizeof(hash_tab(T)));                             \
   fn(hash_init, T)(h, size);                                                 \
   return h;                                                                  \
 }                                                                            \
                                                                              \
 void fn(hash_del, T)(hash_tab(T) * h) {                                      \
-  for (int i = 0; i < h->rows; i++) {                                           \
-    list_del(T, &h->tab[i]);                                                     \
+  for (int i = 0; i < h->rows; i++) {                                        \
+    list_del(T, &h->tab[i]);                                                 \
   }                                                                          \
   free(h->tab);                                                              \
 }                                                                            \
                                                                              \
 void fn(hash_insert, T)(hash_tab(T) * h, T val) {                            \
-  list(T) * row = &h->tab[hashTo(T, h, val)];                                   \
-  list_insert_unique(T, row, val);                                              \
+  list(T) * row = &h->tab[hashTo(T, h, val)];                                \
+  list_insert_unique(T, row, val);                                           \
 }                                                                            \
                                                                              \
 void fn(hash_remove, T)(hash_tab(T) * h, T val) {                            \
-  list(T) * row = &h->tab[hashTo(T, h, val)];                                   \
-  list_remove(T, row, val);                                                     \
+  list(T) * row = &h->tab[hashTo(T, h, val)];                                \
+  list_remove(T, row, val);                                                  \
 }                                                                            \
                                                                              \
 bool fn(hash_contains, T)(hash_tab(T) * h, T val) {                          \
-  list(T) * row = &h->tab[hashTo(T, h, val)];                                   \
-  return list_contains(T, row, val);                                                   \
+  list(T) * row = &h->tab[hashTo(T, h, val)];                                \
+  return list_contains(T, row, val);                                         \
 }                                                                            \
                                                                              \
 T fn(hash_get, T)(hash_tab(T) * h, T val) {                                  \
-  list(T) * row = &h->tab[hashTo(T, h, val)];                                   \
-  return list_get_elem(T, row, val);                                                   \
+  list(T) * row = &h->tab[hashTo(T, h, val)];                                \
+  return list_get_elem(T, row, val);                                         \
 }                                                                            
 
 /*

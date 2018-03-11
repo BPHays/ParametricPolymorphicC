@@ -43,7 +43,27 @@ bool pop_test() {
   return vector_size(int, vptr) != n;
 }
 
+/*
+bool iterator_test() {
+  vector(int) v;
+  vector(int) *vptr = &v;
+  int array [] = {5, 6, 7, 8};
+  vector_init(int, vptr, 10);
+  for (int i = 0; i < sizeof(array)/sizeof(*array); i++) {
+    vptr->m(push)(vptr, array[i]);
+  }
+  iterator(vector, int) it, end;
+  it_begin(vptr, &it);
+  it_end(vptr, &end);
+  for (; it_cmp(&it, &end); it_it(vptr, &it)) {
+    printf("%d\n", it_get(&it));
+  }
+  return true;
+}
+*/
+
 int main() {
   runtest(push_test);
   runtest(pop_test);
+  //runtest(iterator_test);
 }

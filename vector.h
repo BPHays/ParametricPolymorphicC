@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "containers.h"
 
@@ -36,9 +37,14 @@ void        fn(vector_set, T)     (vector(T) * v, size_t i, T elem);         \
 size_t      fn(vector_size, T)    (vector(T) * v);                           \
 size_t      fn(vector_max_size, T)(vector(T) * v);                           \
 void        fn(vector_clear, T)   (vector(T) * v);                           \
-T *         fn(vector_data, T)    (vector(T) * v);                          
+T *         fn(vector_data, T)    (vector(T) * v);                           \
+                                                                             \
+/* Iterator struct */                                                        \
+typedef struct iterator(vector, T) {                                         \
+  T * ptr;                                                                   \
+} iterator(vector, T);                                                       
 
-#define vector(T) paramType(vector, T)
+#define vector(T)    paramType(vector, T)
 
 /* Helpers */
 #define vector_resize(T, v, size) fn(vector_resize,  T)(v, size)
@@ -151,3 +157,31 @@ void fn(vector_clear, T)(vector(T) * v) {                                    \
 T * fn(vector_data, T)(vector(T) * v) {                                      \
   return v->array;                                                           \
 }                                                                            \
+                                                                             \
+/* Iterator */                                                               \
+iterator(vector, T) * fn(it_begin, vector(T))                                \
+                        (vector(T) * v, iterator(vector, T) * it) {          \
+  it->ptr = &v->array[0];                                                    \
+  return it;                                                                 \
+}                                                                            \
+                                                                             \
+iterator(vector, T) * fn(it_end, vector(T))                                  \
+                        (vector(T) * v, iterator(vector, T) * it) {          \
+  it->ptr = &v->array[v->n];                                                 \
+  return it;                                                                 \
+}                                                                            \
+                                                                             \
+iterator(vector, T) * fn(it_it, vector(T))                                   \
+                        (vector(T) * v, iterator(vector, T) * it) {          \
+  it->ptr++;                                                                 \
+  return it;                                                                 \
+}                                                                            \
+                                                                             \
+bool fn(it_cmp, vector(T))(iterator(vector, T) * it1,                        \
+                                 iterator(vector, T) * it2) {                \
+  return it1->ptr == it2->ptr;                                               \
+}                                                                            \
+                                                                             \
+T fn(it_get, vector(T))(iterator(vector, T) * it) {                          \
+  return *it->ptr;                                                           \
+}                                                                            
